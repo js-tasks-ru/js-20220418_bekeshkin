@@ -22,12 +22,12 @@ function getValue(obj, path) {
     return obj;
   }
   // определяем корневое  в объекте и остальной путь для конечного свойства
-  let index = path.indexOf('.');
+  const index = path.indexOf('.');
   let propValue;
   let otherPath;
   if (index > 0) {
-    propValue = path.substring(0, path.indexOf('.')); // пример: 'name1'
-    otherPath = path.substring(path.indexOf('.') + 1); // пример: 'name2.name3'
+    propValue = path.substring(0, index); // пример: 'name1'
+    otherPath = path.substring(index + 1); // пример: 'name2.name3'
   } else {
     propValue = path;
   }
