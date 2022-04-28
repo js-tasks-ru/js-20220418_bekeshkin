@@ -6,6 +6,6 @@
  */
 export function sortStrings(arr, param = 'asc') {
   let sortingArray = [...arr];
-  let multiplier = param === 'asc' ? 1 : param === 'desc' ? -1 : throw 'Некорректное значение типа сортировки asc/desc';
+  let multiplier = param === 'asc' ? 1 : (param === 'desc' ? -1 : alert('Некорректное значение типа сортировки asc/desc'));
   return sortingArray.sort((a, b) => multiplier * a.localeCompare(b, 'ru', {caseFirst: 'upper'}));
 }
