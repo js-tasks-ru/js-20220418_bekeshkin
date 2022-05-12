@@ -7,9 +7,10 @@ export default class ColumnChart {
       this.link = param.link;
       this.formatHeading = param.formatHeading;
     }
-    this.chartHeight = 50;
-    this.inner = undefined;
   }
+
+  inner = undefined;
+  chartHeight = 50;
 
   get element() {
     if (this.inner === undefined) {
@@ -20,6 +21,7 @@ export default class ColumnChart {
 
   update(newData) {
     this.data = newData;
+    this.inner = this.render();
   }
 
   destroy() {
@@ -37,7 +39,7 @@ export default class ColumnChart {
 
   render() {
     const hasData = this.data && this.data.length > 0;
-    const maxValue = getMax(this.data);
+    const maxValue = hasData ? Math.max.apply(Math, this.data) : undefined;
     const chartCssClass = hasData ? 'column-chart' : 'column-chart column-chart_loading';
     let columnChart = createTag('div', 'class', chartCssClass, 'style', '--chart-height: ' + this.chartHeight);
 
@@ -60,7 +62,7 @@ export default class ColumnChart {
     let columnChartChart = createTag('div', 'data-element', 'body', 'class', 'column-chart__chart');
 
     if (hasData) {
-      const scale = this.chartHeight / maxValue;
+      const scale = (this.chartHeight / maxValue).toFixed(3);
       this.data.forEach(item => {
         let data = (item * 100 / maxValue).toFixed(0) + '%';
         let value = Math.floor(item * scale);
@@ -89,22 +91,4 @@ function createTag(tagName, ...attributes) {
     i += 2;
   }
   return tag;
-}
-
-/**
- * Поиск максимального значения в списке
- * @param list
- * @returns {undefined|number}
- */
-function getMax(list) {
-  if (list) {
-    let max = 0;
-    list.forEach(el => {
-      if (el > max) {
-        max = el;
-      }
-    });
-    return max;
-  }
-  return undefined;
 }
