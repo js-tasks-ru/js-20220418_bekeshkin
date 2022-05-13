@@ -11,6 +11,7 @@ export default class ColumnChart {
 
   inner = undefined;
   chartHeight = 50;
+  chartContainer = undefined;
 
   get element() {
     if (this.inner === undefined) {
@@ -21,7 +22,7 @@ export default class ColumnChart {
 
   update(newData) {
     this.data = newData;
-    this.inner = this.render();
+    this.drawColumnChart(this.chartContainer);
   }
 
   destroy() {
@@ -33,14 +34,12 @@ export default class ColumnChart {
   }
 
   remove() {
-    this.inner = undefined;
+    this.inner.remove();
     return null;
   }
 
   render() {
-    const hasData = this.data && this.data.length > 0;
-    const maxValue = hasData ? Math.max.apply(Math, this.data) : undefined;
-    const chartCssClass = hasData ? 'column-chart' : 'column-chart column-chart_loading';
+    const chartCssClass = this.data && this.data.length > 0 ? 'column-chart' : 'column-chart column-chart_loading';
     let columnChart = createTag('div', 'class', chartCssClass, 'style', '--chart-height: ' + this.chartHeight);
 
     let columnChartTitle = createTag('div', 'class', 'column-chart__title');
@@ -59,21 +58,28 @@ export default class ColumnChart {
     columnChartHeader.innerHTML += this.value ? (this.formatHeading ? this.formatHeading(this.value) : this.value) : '';
 
     columnChartContainer.appendChild(columnChartHeader);
-    let columnChartChart = createTag('div', 'data-element', 'body', 'class', 'column-chart__chart');
+    this.chartContainer = createTag('div', 'data-element', 'body', 'class', 'column-chart__chart');
+    this.drawColumnChart(this.chartContainer);
 
-    if (hasData) {
+    columnChartContainer.appendChild(this.chartContainer);
+    columnChart.appendChild(columnChartTitle);
+    columnChart.appendChild(columnChartContainer);
+    return columnChart;
+  }
+
+  drawColumnChart(container) {
+    while (container.firstChild) {
+      container.removeChild(container.lastChild);
+    }
+    if (this.data && this.data.length > 0) {
+      const maxValue = Math.max.apply(Math, this.data);
       const scale = (this.chartHeight / maxValue).toFixed(3);
       this.data.forEach(item => {
         let data = (item * 100 / maxValue).toFixed(0) + '%';
         let value = Math.floor(item * scale);
-        columnChartChart.appendChild(createTag('div', 'style', '--value: ' + value, 'data-tooltip', data));
+        container.appendChild(createTag('div', 'style', '--value: ' + value, 'data-tooltip', data));
       });
     }
-
-    columnChartContainer.appendChild(columnChartChart);
-    columnChart.appendChild(columnChartTitle);
-    columnChart.appendChild(columnChartContainer);
-    return columnChart;
   }
 }
 
